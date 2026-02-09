@@ -3,12 +3,20 @@ export interface Question {
   id: number;
   question: string;
   options: string[];
-  correctAnswer: number; // Index of options
+  correctAnswer: number;
   category: string;
+}
+
+export interface Paper {
+  id: number;
+  title: string;
+  isAvailable: boolean;
+  totalQuestions: number;
 }
 
 export interface QuizState {
   studentName: string;
+  selectedPaperId: number | null;
   answers: Record<number, number | null>;
   isFinished: boolean;
   timeRemaining: number;

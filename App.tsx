@@ -5,7 +5,8 @@ import { Question, QuizState, Result } from './types';
 import Header from './components/Header';
 import QuestionCard from './components/QuestionCard';
 import ResultView from './components/ResultView';
-import { PlayCircle, ClipboardList, Info } from 'lucide-react';
+import PaperSelection from './components/PaperSelection';
+import { ClipboardList, Info, PlayCircle, LogOut } from 'lucide-react';
 
 const QUIZ_DURATION = 60 * 60; // 60 minutes in seconds
 
@@ -14,6 +15,7 @@ const App: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [state, setState] = useState<QuizState>({
     studentName: '',
+    selectedPaperId: null,
     answers: {},
     isFinished: false,
     timeRemaining: QUIZ_DURATION,
@@ -44,9 +46,15 @@ const App: React.FC = () => {
     };
   }, [state.isStarted, state.isFinished, finishQuiz]);
 
-  const handleStart = (name: string) => {
-    if (!name.trim()) return;
-    setState(prev => ({ ...prev, studentName: name, isStarted: true }));
+  const handlePaperSelect = (paperId: number) => {
+    setState(prev => ({ 
+      ...prev, 
+      selectedPaperId: paperId, 
+      isStarted: true,
+      timeRemaining: QUIZ_DURATION,
+      answers: {} 
+    }));
+    setCurrentQuestionIndex(0);
   };
 
   const handleAnswerSelect = (questionId: number, optionIndex: number) => {
@@ -86,56 +94,97 @@ const App: React.FC = () => {
     };
   };
 
-  if (!state.isStarted) {
+  // 1. Initial Name Entrance
+  if (!state.studentName) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
-          <div className="flex justify-center mb-6">
-            <div className="p-3 bg-blue-50 rounded-full">
-              <ClipboardList className="w-8 h-8 text-blue-600" />
-            </div>
-          </div>
-          <h1 className="text-3xl font-bold text-center text-slate-800 mb-2">AceQuiz Pro</h1>
-          <p className="text-center text-slate-500 mb-8">Ultimate 96 MCQ Evaluation</p>
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border border-slate-100 overflow-hidden relative">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-50 rounded-full opacity-50"></div>
           
-          <div className="space-y-4 mb-8">
-            <div className="flex items-start gap-3 text-sm text-slate-600">
-              <div className="p-1 bg-blue-100 rounded">
-                <Info className="w-4 h-4 text-blue-600 shrink-0" />
-              </div>
-              <div>
-                <p><span className="font-semibold text-slate-800">Timer:</span> 60 Minutes total</p>
-                <p><span className="font-semibold text-slate-800">Marking:</span> +1 per correct, -0.25 per wrong</p>
-                <p><span className="font-semibold text-slate-800">Review:</span> Detailed error analysis after submission</p>
+          <div className="relative z-10">
+            <div className="flex justify-center mb-6">
+              <div className="p-4 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200 float-animation">
+                <ClipboardList className="w-8 h-8 text-white" />
               </div>
             </div>
-          </div>
+            
+            <h1 className="text-3xl font-black text-center text-slate-900 mb-2">AceQuiz Pro</h1>
+            <p className="text-center text-slate-500 mb-8 font-medium">Digital Examination System</p>
+            
+            <div className="bg-slate-50 rounded-2xl p-5 mb-8 border border-slate-100 space-y-3">
+              <div className="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                <Info className="w-4 h-4 text-blue-600" /> System Rules
+              </div>
+              <ul className="text-xs text-slate-500 space-y-2 pl-2">
+                <li className="flex items-center gap-2">• Correct Answer: <span className="text-green-600 font-bold">+1.00</span></li>
+                <li className="flex items-center gap-2">• Incorrect Answer: <span className="text-red-600 font-bold">-0.25</span></li>
+                <li className="flex items-center gap-2">• Session Limit: <span className="text-slate-800 font-bold">60 Minutes</span></li>
+              </ul>
+            </div>
 
-          <div className="space-y-4">
-            <label className="block">
-              <span className="text-slate-700 font-medium">Student Full Name</span>
-              <input
-                type="text"
-                placeholder="Enter your name to unlock the quiz"
-                className="mt-1 block w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                value={state.studentName}
-                onChange={(e) => setState(prev => ({ ...prev, studentName: e.target.value }))}
-              />
-            </label>
-            <button
-              onClick={() => handleStart(state.studentName)}
-              disabled={!state.studentName.trim()}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-200 active:scale-95"
-            >
-              <PlayCircle className="w-5 h-5" />
-              Begin Quiz (96 MCQs)
-            </button>
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Student Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. John Doe"
+                  className="w-full px-5 py-4 rounded-xl border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-all font-semibold text-slate-800 placeholder:text-slate-300"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.currentTarget.value) setState(prev => ({ ...prev, studentName: e.currentTarget.value }));
+                  }}
+                  id="name-input"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const input = document.getElementById('name-input') as HTMLInputElement;
+                  if (input.value) setState(prev => ({ ...prev, studentName: input.value }));
+                }}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-200 active:scale-95"
+              >
+                Access Portal
+                <PlayCircle className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
+  // 2. Paper Selection
+  if (!state.selectedPaperId) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <header className="bg-white border-b border-slate-200 py-4 shadow-sm">
+          <div className="container mx-auto px-4 flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="bg-blue-600 text-white p-1.5 rounded-lg">
+                <ClipboardList className="w-5 h-5" />
+              </div>
+              <span className="font-black text-xl text-slate-900">AceQuiz Pro</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="text-right hidden sm:block">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Logged In As</p>
+                <p className="font-bold text-slate-800">{state.studentName}</p>
+              </div>
+              <button 
+                onClick={() => setState(prev => ({ ...prev, studentName: '' }))}
+                className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                title="Log Out"
+              >
+                <LogOut className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+        </header>
+        <PaperSelection onSelect={handlePaperSelect} />
+      </div>
+    );
+  }
+
+  // 3. Result View
   if (state.isFinished) {
     const result = calculateResult();
     return (
@@ -145,12 +194,14 @@ const App: React.FC = () => {
           studentName={state.studentName} 
           questions={questions} 
           answers={state.answers} 
-          onRestart={() => window.location.reload()}
+          onRestart={() => setState(prev => ({ ...prev, selectedPaperId: null, isFinished: false, isStarted: false }))}
+          paperName={`Paper ${state.selectedPaperId}`}
         />
       </div>
     );
   }
 
+  // 4. Quiz View
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header 
@@ -159,6 +210,7 @@ const App: React.FC = () => {
         totalQuestions={questions.length}
         currentQuestionIndex={currentQuestionIndex}
         onFinish={finishQuiz}
+        paperName={`Paper ${state.selectedPaperId}`}
       />
       
       <main className="flex-1 container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -175,9 +227,9 @@ const App: React.FC = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-24">
-            <h3 className="text-lg font-semibold mb-4 text-slate-800 border-b pb-2">Navigation</h3>
-            <div className="grid grid-cols-6 gap-2 max-h-[400px] overflow-y-auto custom-scrollbar p-1">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-28">
+            <h3 className="text-sm font-black mb-4 text-slate-400 uppercase tracking-widest border-b pb-2">Question Matrix</h3>
+            <div className="grid grid-cols-6 gap-2 max-h-[420px] overflow-y-auto custom-scrollbar p-1">
               {questions.map((q, idx) => {
                 const isAnswered = state.answers[q.id] !== undefined;
                 const isCurrent = idx === currentQuestionIndex;
@@ -186,9 +238,9 @@ const App: React.FC = () => {
                     key={q.id}
                     onClick={() => setCurrentQuestionIndex(idx)}
                     className={`
-                      w-8 h-8 rounded text-xs font-medium flex items-center justify-center transition-all
+                      w-8 h-8 rounded-lg text-[10px] font-black flex items-center justify-center transition-all
                       ${isCurrent ? 'ring-2 ring-blue-500 ring-offset-2' : ''}
-                      ${isAnswered ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}
+                      ${isAnswered ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}
                     `}
                   >
                     {idx + 1}
@@ -196,14 +248,16 @@ const App: React.FC = () => {
                 );
               })}
             </div>
-            <div className="mt-6 space-y-2 text-xs text-slate-500 border-t pt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-600 rounded"></div>
-                <span>Answered</span>
+            <div className="mt-8 space-y-3 pt-6 border-t border-slate-100">
+              <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest">
+                <span className="text-slate-400">Answered</span>
+                <span className="text-blue-600">{Object.keys(state.answers).length}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-slate-100 rounded"></div>
-                <span>Unattempted</span>
+              <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-blue-600 transition-all" 
+                  style={{ width: `${(Object.keys(state.answers).length / questions.length) * 100}%` }}
+                />
               </div>
             </div>
           </div>
