@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { QUIZ_QUESTIONS } from './data/questions';
+import { PAPER_1_QUESTIONS, PAPER_2_QUESTIONS } from './data/questions';
 import { Question, QuizState, Result } from './types';
 import Header from './components/Header';
 import QuestionCard from './components/QuestionCard';
@@ -11,7 +11,7 @@ import { ClipboardList, Info, PlayCircle, LogOut } from 'lucide-react';
 const QUIZ_DURATION = 60 * 60; // 60 minutes in seconds
 
 const App: React.FC = () => {
-  const [questions] = useState<Question[]>(QUIZ_QUESTIONS);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [state, setState] = useState<QuizState>({
     studentName: '',
@@ -47,6 +47,8 @@ const App: React.FC = () => {
   }, [state.isStarted, state.isFinished, finishQuiz]);
 
   const handlePaperSelect = (paperId: number) => {
+    const paperQuestions = paperId === 1 ? PAPER_1_QUESTIONS : PAPER_2_QUESTIONS;
+    setQuestions(paperQuestions);
     setState(prev => ({ 
       ...prev, 
       selectedPaperId: paperId, 
@@ -195,7 +197,7 @@ const App: React.FC = () => {
           questions={questions} 
           answers={state.answers} 
           onRestart={() => setState(prev => ({ ...prev, selectedPaperId: null, isFinished: false, isStarted: false }))}
-          paperName={`Paper ${state.selectedPaperId}`}
+          paperName={state.selectedPaperId === 2 ? 'Paper 2 (Math)' : `Paper ${state.selectedPaperId}`}
         />
       </div>
     );
@@ -210,7 +212,7 @@ const App: React.FC = () => {
         totalQuestions={questions.length}
         currentQuestionIndex={currentQuestionIndex}
         onFinish={finishQuiz}
-        paperName={`Paper ${state.selectedPaperId}`}
+        paperName={state.selectedPaperId === 2 ? 'Paper 2 (Math)' : `Paper ${state.selectedPaperId}`}
       />
       
       <main className="flex-1 container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -240,7 +242,7 @@ const App: React.FC = () => {
                     className={`
                       w-8 h-8 rounded-lg text-[10px] font-black flex items-center justify-center transition-all
                       ${isCurrent ? 'ring-2 ring-blue-500 ring-offset-2' : ''}
-                      ${isAnswered ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}
+                      ${isAnswered ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}
                     `}
                   >
                     {idx + 1}
@@ -251,11 +253,11 @@ const App: React.FC = () => {
             <div className="mt-8 space-y-3 pt-6 border-t border-slate-100">
               <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest">
                 <span className="text-slate-400">Answered</span>
-                <span className="text-blue-600">{Object.keys(state.answers).length}</span>
+                <span className="text-blue-600 font-black">{Object.keys(state.answers).length} / {questions.length}</span>
               </div>
               <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-blue-600 transition-all" 
+                  className="h-full bg-blue-600 transition-all duration-300" 
                   style={{ width: `${(Object.keys(state.answers).length / questions.length) * 100}%` }}
                 />
               </div>

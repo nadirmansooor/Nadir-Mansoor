@@ -1,7 +1,7 @@
 
 import { Question } from '../types';
 
-export const QUIZ_QUESTIONS: Question[] = [
+export const PAPER_1_QUESTIONS: Question[] = [
   { id: 1, question: "Who among the following is the current Secretary General of SAARC?", options: ["Ahmed Saleem", "Amjad Hussain Sial", "Arjun Bahadur Thappa", "G. Sarwar Bangali"], correctAnswer: 3, category: "General Knowledge" },
   { id: 2, question: "Who was the first governor general of the State Bank of Pakistan?", options: ["Zahid Hussain", "Abdul Qadir", "S.A. Hasnie", "Mahbubur Rashid"], correctAnswer: 0, category: "Pakistan Studies" },
   { id: 3, question: "Kurt Waldheim was an Austrian diplomat and statesman who served two terms as the secretary general of the United Nations.", options: ["Third", "Fourth", "Fifth", "Sixth"], correctAnswer: 1, category: "General Knowledge" },
@@ -99,3 +99,28 @@ export const QUIZ_QUESTIONS: Question[] = [
   { id: 95, question: "The correct indirect speech of He said, \"I am going to the market.\"", options: ["He said he was going to the market.", "He said he would go to the market.", "He said he had gone to the market.", "He said he will go to the market."], correctAnswer: 0, category: "English" },
   { id: 96, question: "In computing, NOS stands for:", options: ["Network operating system", "Node operating system", "Non-operating system", "None of these"], correctAnswer: 0, category: "Computer Science" }
 ];
+
+export const PAPER_2_QUESTIONS: Question[] = [
+  { id: 1, question: "If a:b = 3:4 and b:c = 8:9, then what is a:c?", options: ["1:2", "3:2", "2:3", "1:3"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 2, question: "The ratio of two numbers is 3:8 and their difference is 115. The smaller number is:", options: ["184", "69", "59", "40"], correctAnswer: 1, category: "Ratio & Proportion" },
+  { id: 3, question: "If 2A = 3B = 4C, then A:B:C is:", options: ["2:3:4", "4:3:2", "6:4:3", "3:4:6"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 4, question: "A sum of money is to be distributed among A, B, C, D in the proportion of 5:2:4:3. If C gets Rs. 1000 more than D, what is B's share?", options: ["Rs. 500", "Rs. 1500", "Rs. 2000", "Rs. 2500"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 5, question: "The fourth proportional to 5, 8, 15 is:", options: ["18", "24", "19", "20"], correctAnswer: 1, category: "Ratio & Proportion" },
+  { id: 6, question: "Seats for Mathematics, Physics and Biology in a school are in the ratio 5:7:8. There is a proposal to increase these seats by 40%, 50% and 75% respectively. What will be the new ratio?", options: ["2:3:4", "6:7:8", "6:8:9", "None of these"], correctAnswer: 0, category: "Ratio & Proportion" },
+  { id: 7, question: "Two numbers are in the ratio 3:5. If 9 is subtracted from each, the new ratio becomes 12:23. The smaller number is:", options: ["27", "33", "49", "55"], correctAnswer: 1, category: "Ratio & Proportion" },
+  { id: 8, question: "Salaries of Ravi and Sumit are in the ratio 2:3. If the salary of each is increased by Rs. 4000, the new ratio becomes 40:57. What is Sumit's salary?", options: ["Rs. 17,000", "Rs. 20,000", "Rs. 25,500", "Rs. 38,000"], correctAnswer: 3, category: "Ratio & Proportion" },
+  { id: 9, question: "If a:b = c:d, then (ma + nc) / (mb + nd) is equal to:", options: ["a/b", "c/d", "Both a/b and c/d", "None of these"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 10, question: "The ratio of the incomes of A and B is 5:4 and the ratio of their expenditures is 3:2. If at the end of the year, each saves Rs. 1600, then the income of A is:", options: ["Rs. 3400", "Rs. 3600", "Rs. 4000", "Rs. 4400"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 11, question: "Three numbers are in the ratio 1:2:3 and their H.C.F. is 12. The numbers are:", options: ["4, 8, 12", "5, 10, 15", "10, 20, 30", "12, 24, 36"], correctAnswer: 3, category: "Ratio & Proportion" },
+  { id: 12, question: "If x:y = 5:2, then (8x + 9y) : (8x + 2y) is:", options: ["22:29", "26:61", "29:22", "61:26"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 13, question: "The mean proportional between 234 and 104 is:", options: ["156", "175", "190", "120"], correctAnswer: 0, category: "Ratio & Proportion" },
+  { id: 14, question: "If 0.75:x :: 5:8, then x is equal to:", options: ["1.12", "1.20", "1.25", "1.30"], correctAnswer: 1, category: "Ratio & Proportion" },
+  { id: 15, question: "The ratio of land to water for the whole earth is 1:2 and 2:3 on the northern hemisphere. The ratio of land to water on the southern hemisphere is:", options: ["4:11", "5:11", "11:4", "11:5"], correctAnswer: 0, category: "Ratio & Proportion" },
+  { id: 16, question: "The ratio of the number of boys and girls in a college is 7:8. If the percentage increase in the number of boys and girls be 20% and 10% respectively, what will be the new ratio?", options: ["8:9", "17:18", "21:22", "None of these"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 17, question: "Third proportional to (a^2 - b^2) and (a - b) is:", options: ["(a - b)/(a + b)", "a - b", "a + b", "(a + b)/(a - b)"], correctAnswer: 0, category: "Ratio & Proportion" },
+  { id: 18, question: "Gold is 19 times as heavy as water and copper is 9 times as heavy as water. In what ratio should these be mixed to get an alloy 15 times as heavy as water?", options: ["1:1", "2:3", "3:2", "1:2"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 19, question: "The salaries of A, B, and C are in the ratio 2:3:5. If the increments of 15%, 10%, and 20% are allowed respectively in their salaries, then what will be the new ratio of their salaries?", options: ["3:3:10", "10:11:20", "23:33:60", "None of these"], correctAnswer: 2, category: "Ratio & Proportion" },
+  { id: 20, question: "The product of two positive numbers is 4725 and the ratio of them is 3:5. The lesser of the two numbers is:", options: ["15", "35", "53", "65"], correctAnswer: 1, category: "Ratio & Proportion" }
+];
+
+export const QUIZ_QUESTIONS = PAPER_1_QUESTIONS;

@@ -10,8 +10,8 @@ interface PaperSelectionProps {
 const PAPERS: Paper[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   title: `Paper ${i + 1}`,
-  isAvailable: i === 0, // Only Paper 1 is available
-  totalQuestions: 96
+  isAvailable: i === 0 || i === 1, // Paper 1 and Paper 2 are available
+  totalQuestions: i === 0 ? 96 : (i === 1 ? 20 : 0)
 }));
 
 const PaperSelection: React.FC<PaperSelectionProps> = ({ onSelect }) => {
@@ -39,7 +39,7 @@ const PaperSelection: React.FC<PaperSelectionProps> = ({ onSelect }) => {
           >
             <div className={`
               w-12 h-12 rounded-xl flex items-center justify-center mb-4
-              ${paper.isAvailable ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-400'}
+              ${paper.isAvailable ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' : 'bg-slate-200 text-slate-400'}
             `}>
               {paper.isAvailable ? <FileText className="w-6 h-6" /> : <Lock className="w-5 h-5" />}
             </div>
@@ -50,7 +50,10 @@ const PaperSelection: React.FC<PaperSelectionProps> = ({ onSelect }) => {
             
             {paper.isAvailable ? (
               <>
-                <p className="text-slate-500 text-sm mb-6">96 MCQs • 60 Mins</p>
+                <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">
+                  {paper.id === 2 ? 'Math: Ratio & Prop.' : 'General Syllabus'}
+                </p>
+                <p className="text-slate-400 text-xs mb-6">{paper.totalQuestions} MCQs • 60 Mins</p>
                 <div className="flex items-center gap-2 text-blue-600 font-bold text-sm">
                   Start Paper <ArrowRight className="w-4 h-4" />
                 </div>
@@ -61,8 +64,8 @@ const PaperSelection: React.FC<PaperSelectionProps> = ({ onSelect }) => {
               </span>
             )}
 
-            {paper.id === 1 && (
-              <div className="absolute -top-3 -right-3 bg-amber-400 text-white p-2 rounded-full shadow-lg">
+            {(paper.id === 1 || paper.id === 2) && (
+              <div className={`absolute -top-3 -right-3 p-2 rounded-full shadow-lg ${paper.id === 1 ? 'bg-amber-400' : 'bg-blue-400'} text-white`}>
                 <Star className="w-4 h-4 fill-current" />
               </div>
             )}
