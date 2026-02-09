@@ -22,15 +22,17 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   onNext,
   onPrev
 }) => {
+  if (!question) return null;
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
-          <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-full uppercase tracking-wider">
+          <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black rounded-full uppercase tracking-wider">
             {question.category}
           </span>
-          <span className="text-sm font-medium text-slate-400">
-            Question {currentIndex + 1} of {totalQuestions}
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+            MCQ {currentIndex + 1} / {totalQuestions}
           </span>
         </div>
 
@@ -53,12 +55,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                 `}
               >
                 <div className={`
-                  w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0
-                  ${isSelected ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-400'}
+                  w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0
+                  ${isSelected ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white border border-slate-200 text-slate-400'}
                 `}>
                   {String.fromCharCode(65 + index)}
                 </div>
-                <span className="text-base md:text-lg font-medium">{option}</span>
+                <span className="text-base md:text-lg font-bold">{option}</span>
               </button>
             );
           })}
@@ -69,24 +71,24 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         <button
           onClick={onPrev}
           disabled={currentIndex === 0}
-          className="flex items-center gap-2 text-slate-500 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-500 transition-colors font-semibold"
+          className="flex items-center gap-2 text-slate-500 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-500 transition-colors font-bold uppercase text-xs tracking-widest"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4" />
           Previous
         </button>
         
-        <div className="hidden md:flex items-center gap-2 text-slate-400 text-sm italic">
+        <div className="hidden md:flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-tighter">
           <HelpCircle className="w-4 h-4" />
-          Select an option to record your answer
+          Marking: +1.00 / -0.25
         </div>
 
         <button
           onClick={onNext}
           disabled={currentIndex === totalQuestions - 1}
-          className="flex items-center gap-2 text-slate-500 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-500 transition-colors font-semibold"
+          className="flex items-center gap-2 text-slate-500 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-500 transition-colors font-bold uppercase text-xs tracking-widest"
         >
           Next
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
     </div>
