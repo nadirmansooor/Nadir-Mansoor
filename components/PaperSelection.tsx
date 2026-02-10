@@ -1,29 +1,49 @@
 
 import React, { useState } from 'react';
-import { FileText, Lock, ArrowRight, Star, ShieldCheck, X } from 'lucide-react';
-import { Paper } from '../types';
+import { FileText, Lock, ArrowRight, ShieldCheck, X, GraduationCap, Clock, CheckCircle2 } from 'lucide-react';
+import { Paper, MaterialType } from '../types';
 
 interface PaperSelectionProps {
+  category: 'competitive' | 'board' | null;
+  studentClass: string | null;
+  studentBoard: string | null;
+  subject: string | null;
+  materialType: MaterialType | null;
   onSelect: (paperId: number) => void;
 }
 
-const PAPERS: Paper[] = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  title: `Paper ${i + 1}`,
-  isAvailable: i === 0 || i === 1 || i === 2, // Papers 1, 2, and 3 are available
-  totalQuestions: i === 0 ? 96 : (i === 1 ? 20 : (i === 2 ? 95 : 0))
-}));
+const PAPERS: Paper[] = [
+  { 
+    id: 1, 
+    title: `Paper 1 (PMS GK 2019 & Sub-Inspector 2019)`, 
+    isAvailable: true, 
+    totalQuestions: 96, 
+    category: 'competitive' 
+  },
+  { 
+    id: 3, 
+    title: `Paper 3 (Anti-Corruption Specialist 2020)`, 
+    isAvailable: true, 
+    totalQuestions: 96, 
+    category: 'competitive' 
+  }
+];
 
-const PaperSelection: React.FC<PaperSelectionProps> = ({ onSelect }) => {
-  const [showPasswordPrompt, setShowPasswordPrompt] = useState<number | null>(null);
+const PaperSelection: React.FC<PaperSelectionProps> = ({ category, studentClass, studentBoard, subject, materialType, onSelect }) => {
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState<{ id: number; title: string } | null>(null);
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+
+  const filteredPapers = category === 'competitive' 
+    ? PAPERS.filter(p => p.category === 'competitive')
+    : PAPERS.filter(p => p.category === 'board' && p.subject === subject && p.type === materialType);
 
   const handleCardClick = (paper: Paper) => {
     if (!paper.isAvailable) return;
     
-    if (paper.id === 3) {
-      setShowPasswordPrompt(3);
+    // As per instruction, secure Paper 1 and Paper 3
+    if (paper.id === 1 || paper.id === 3) {
+      setShowPasswordPrompt({ id: paper.id, title: paper.title });
     } else {
       onSelect(paper.id);
     }
@@ -31,8 +51,13 @@ const PaperSelection: React.FC<PaperSelectionProps> = ({ onSelect }) => {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'Paper3') {
-      onSelect(3);
+    let isCorrect = false;
+    
+    if (showPasswordPrompt?.id === 1 && password === '1Paper') isCorrect = true;
+    if (showPasswordPrompt?.id === 3 && password === 'Paper3') isCorrect = true;
+
+    if (isCorrect) {
+      onSelect(showPasswordPrompt!.id);
       setShowPasswordPrompt(null);
       setPassword('');
       setError(false);
@@ -44,98 +69,99 @@ const PaperSelection: React.FC<PaperSelectionProps> = ({ onSelect }) => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 relative">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-black text-slate-900 mb-4">Select Examination Paper</h1>
-        <p className="text-slate-500 max-w-2xl mx-auto">
-          Choose an available paper to begin your 60-minute assessment. 
-          Each correct answer earns 1 mark, with 0.25 negative marking for incorrect choices.
+      <div className="text-center mb-16">
+        <h1 className="text-4xl font-black text-slate-900 mb-3 tracking-tight">Examination Portal</h1>
+        <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2">
+          {category === 'competitive' ? (
+            <span className="bg-blue-600 text-white px-3 py-1 rounded-full">Competitive Recruitment Path</span>
+          ) : (
+            <span className="bg-indigo-600 text-white px-3 py-1 rounded-full">{subject} • {studentClass} • {studentBoard}</span>
+          )}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-        {PAPERS.map((paper) => (
-          <div 
-            key={paper.id}
-            onClick={() => handleCardClick(paper)}
-            className={`
-              relative group rounded-2xl p-6 transition-all duration-300 border-2
-              ${paper.isAvailable 
-                ? 'bg-white border-blue-100 hover:border-blue-500 hover:shadow-2xl cursor-pointer hover:-translate-y-2' 
-                : 'bg-slate-50 border-slate-100 opacity-80 cursor-not-allowed'}
-            `}
-          >
-            <div className={`
-              w-12 h-12 rounded-xl flex items-center justify-center mb-4
-              ${paper.isAvailable ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' : 'bg-slate-200 text-slate-400'}
-            `}>
-              {paper.isAvailable ? (paper.id === 3 ? <ShieldCheck className="w-6 h-6" /> : <FileText className="w-6 h-6" />) : <Lock className="w-5 h-5" />}
-            </div>
-
-            <h3 className={`text-xl font-bold mb-1 ${paper.isAvailable ? 'text-slate-900' : 'text-slate-400'}`}>
-              {paper.title}
-            </h3>
-            
-            {paper.isAvailable ? (
-              <>
-                <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">
-                  {paper.id === 1 ? 'General Syllabus' : (paper.id === 2 ? 'Math: Ratio & Prop.' : 'SECURED: Paper 3')}
-                </p>
-                <p className="text-slate-400 text-xs mb-6">{paper.totalQuestions} MCQs • 60 Mins</p>
-                <div className="flex items-center gap-2 text-blue-600 font-bold text-sm">
-                  {paper.id === 3 ? 'Unlock Paper' : 'Start Paper'} <ArrowRight className="w-4 h-4" />
+      {filteredPapers.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {filteredPapers.map((paper) => (
+            <div key={paper.id} onClick={() => handleCardClick(paper)}
+              className="relative group rounded-[2.5rem] p-10 bg-white border-2 border-slate-100 hover:border-blue-600 hover:shadow-2xl cursor-pointer transition-all hover:-translate-y-2 flex flex-col min-h-[320px]"
+            >
+              <div className="absolute top-8 right-10">
+                <Lock className="w-6 h-6 text-slate-200 group-hover:text-blue-500 transition-colors" />
+              </div>
+              
+              <div className="w-16 h-16 rounded-3xl bg-slate-900 text-white flex items-center justify-center mb-8 shadow-xl shadow-slate-100 group-hover:bg-blue-600 group-hover:rotate-6 transition-all duration-300">
+                <ShieldCheck className="w-10 h-10" />
+              </div>
+              
+              <h3 className="text-2xl font-black text-slate-900 mb-4 leading-tight">{paper.title}</h3>
+              
+              <div className="flex flex-wrap gap-4 mt-2 mb-10">
+                <div className="flex items-center gap-1.5 text-slate-400 font-black text-[10px] uppercase">
+                  <FileText className="w-3 h-3" /> {paper.totalQuestions} Questions
                 </div>
-              </>
-            ) : (
-              <span className="inline-block px-3 py-1 bg-slate-200 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest mt-4">
-                Coming Soon
-              </span>
-            )}
-
-            {(paper.id === 1 || paper.id === 2 || paper.id === 3) && (
-              <div className={`absolute -top-3 -right-3 p-2 rounded-full shadow-lg ${paper.id === 1 ? 'bg-amber-400' : (paper.id === 2 ? 'bg-blue-400' : 'bg-indigo-600')} text-white`}>
-                <Star className="w-4 h-4 fill-current" />
+                <div className="flex items-center gap-1.5 text-slate-400 font-black text-[10px] uppercase">
+                  <Clock className="w-3 h-3" /> 60 Minutes
+                </div>
+                <div className="flex items-center gap-1.5 text-red-500 font-black text-[10px] uppercase">
+                  <CheckCircle2 className="w-3 h-3" /> 0.25 Negative Marking
+                </div>
               </div>
-            )}
+              
+              <div className="mt-auto flex items-center gap-2 font-black text-blue-600 uppercase text-[10px] tracking-widest group-hover:gap-4 transition-all">
+                Unlock Examination <ArrowRight className="w-4 h-4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-[3rem] p-20 text-center border-2 border-dashed border-slate-200">
+          <GraduationCap className="w-24 h-24 text-slate-100 mx-auto mb-8" />
+          <h3 className="text-3xl font-black text-slate-800 mb-4">Material Uploading...</h3>
+          <p className="text-slate-500 max-w-lg mx-auto font-bold leading-relaxed">
+            Sir Nadir is currently preparing specialized content for {subject || 'this category'}. Verified materials will be added shortly.
+          </p>
+          <div className="mt-12 flex justify-center gap-4">
+             <div className="bg-blue-50 text-blue-600 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-blue-100">Status: Scheduled</div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
-      {/* Password Prompt Modal */}
       {showPasswordPrompt && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-slate-100 animate-in zoom-in duration-300">
-            <div className="flex justify-between items-start mb-6">
-              <div className="p-3 bg-indigo-100 rounded-2xl text-indigo-600">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <button onClick={() => setShowPasswordPrompt(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
-                <X className="w-6 h-6" />
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[3rem] p-12 max-w-md w-full shadow-2xl animate-in zoom-in duration-300 relative border border-white/20">
+            <div className="flex justify-between items-start mb-8">
+              <div className="p-4 bg-slate-900 rounded-2xl text-white shadow-lg"><Lock className="w-8 h-8" /></div>
+              <button 
+                onClick={() => {
+                  setShowPasswordPrompt(null);
+                  setPassword('');
+                  setError(false);
+                }} 
+                className="text-slate-300 hover:text-slate-600 transition-colors p-2"
+              >
+                <X className="w-8 h-8" />
               </button>
             </div>
             
-            <h2 className="text-2xl font-black text-slate-900 mb-2">Secure Entry</h2>
-            <p className="text-slate-500 text-sm mb-6">Paper 3 is protected. Please enter the authorized access key to continue.</p>
+            <h2 className="text-3xl font-black text-slate-900 mb-2">Access Key</h2>
+            <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-10">
+              {showPasswordPrompt.title}
+            </p>
             
-            <form onSubmit={handlePasswordSubmit} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Access Password</label>
-                <input
-                  autoFocus
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password..."
-                  className={`w-full px-5 py-4 rounded-xl border-2 outline-none transition-all font-bold tracking-widest
-                    ${error ? 'border-red-500 bg-red-50' : 'border-slate-100 focus:border-indigo-500 bg-slate-50'}`}
+            <form onSubmit={handlePasswordSubmit} className="space-y-6">
+              <div className="relative">
+                <input 
+                  autoFocus 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder="••••••••" 
+                  className={`w-full px-6 py-6 rounded-2xl border-2 outline-none transition-all font-black text-2xl tracking-[0.5em] text-center ${error ? 'border-red-500 bg-red-50 text-red-900' : 'border-slate-100 focus:border-slate-900 bg-slate-50 text-slate-900'}`} 
                 />
-                {error && <p className="text-red-500 text-[10px] font-bold mt-1 ml-1 animate-pulse uppercase">Access Denied: Invalid Key</p>}
+                {error && <p className="text-red-500 text-[10px] font-black uppercase mt-3 text-center">Invalid Authorization Key</p>}
               </div>
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl transition-all shadow-xl shadow-indigo-100 active:scale-95 uppercase tracking-widest text-xs"
-              >
-                Authenticate
-              </button>
+              <button type="submit" className="w-full bg-slate-900 hover:bg-black text-white font-black py-6 rounded-2xl shadow-2xl uppercase tracking-[0.3em] text-xs active:scale-95 transition-all">Begin Assessment</button>
             </form>
           </div>
         </div>
