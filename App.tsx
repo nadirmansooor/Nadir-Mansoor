@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { PAPER_1_QUESTIONS, PAPER_2_QUESTIONS } from './data/questions';
+import { PAPER_1_QUESTIONS, PAPER_2_QUESTIONS, PAPER_3_QUESTIONS } from './data/questions';
 import { Question, QuizState, Result } from './types';
 import Header from './components/Header';
 import QuestionCard from './components/QuestionCard';
@@ -22,16 +22,16 @@ const App: React.FC = () => {
     isStarted: false,
   });
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   const finishQuiz = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) window.clearInterval(timerRef.current);
     setState(prev => ({ ...prev, isFinished: true }));
   }, []);
 
   useEffect(() => {
     if (state.isStarted && !state.isFinished && state.timeRemaining > 0) {
-      timerRef.current = setInterval(() => {
+      timerRef.current = window.setInterval(() => {
         setState(prev => {
           if (prev.timeRemaining <= 1) {
             finishQuiz();
@@ -42,12 +42,16 @@ const App: React.FC = () => {
       }, 1000);
     }
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) window.clearInterval(timerRef.current);
     };
   }, [state.isStarted, state.isFinished, finishQuiz]);
 
   const handlePaperSelect = (paperId: number) => {
-    const paperQuestions = paperId === 1 ? PAPER_1_QUESTIONS : PAPER_2_QUESTIONS;
+    let paperQuestions: Question[] = [];
+    if (paperId === 1) paperQuestions = PAPER_1_QUESTIONS;
+    else if (paperId === 2) paperQuestions = PAPER_2_QUESTIONS;
+    else if (paperId === 3) paperQuestions = PAPER_3_QUESTIONS;
+    
     setQuestions(paperQuestions);
     setState(prev => ({ 
       ...prev, 
@@ -96,7 +100,6 @@ const App: React.FC = () => {
     };
   };
 
-  // 1. Initial Name Entrance
   if (!state.studentName) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
@@ -154,7 +157,6 @@ const App: React.FC = () => {
     );
   }
 
-  // 2. Paper Selection
   if (!state.selectedPaperId) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -186,9 +188,9 @@ const App: React.FC = () => {
     );
   }
 
-  // 3. Result View
   if (state.isFinished) {
     const result = calculateResult();
+    const paperLabel = state.selectedPaperId === 1 ? 'Paper 1' : (state.selectedPaperId === 2 ? 'Paper 2 (Math)' : 'Paper 3 (Special)');
     return (
       <div className="min-h-screen bg-slate-50 py-12 px-4">
         <ResultView 
@@ -197,13 +199,14 @@ const App: React.FC = () => {
           questions={questions} 
           answers={state.answers} 
           onRestart={() => setState(prev => ({ ...prev, selectedPaperId: null, isFinished: false, isStarted: false }))}
-          paperName={state.selectedPaperId === 2 ? 'Paper 2 (Math)' : `Paper ${state.selectedPaperId}`}
+          paperName={paperLabel}
         />
       </div>
     );
   }
 
-  // 4. Quiz View
+  const paperLabel = state.selectedPaperId === 1 ? 'Paper 1' : (state.selectedPaperId === 2 ? 'Paper 2 (Math)' : 'Paper 3 (Special)');
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header 
@@ -212,7 +215,7 @@ const App: React.FC = () => {
         totalQuestions={questions.length}
         currentQuestionIndex={currentQuestionIndex}
         onFinish={finishQuiz}
-        paperName={state.selectedPaperId === 2 ? 'Paper 2 (Math)' : `Paper ${state.selectedPaperId}`}
+        paperName={paperLabel}
       />
       
       <main className="flex-1 container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -230,7 +233,7 @@ const App: React.FC = () => {
 
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-28">
-            <h3 className="text-sm font-black mb-4 text-slate-400 uppercase tracking-widest border-b pb-2">Question Matrix</h3>
+            <h3 className="text-xs font-black mb-4 text-slate-400 uppercase tracking-widest border-b pb-2">Question Matrix</h3>
             <div className="grid grid-cols-6 gap-2 max-h-[420px] overflow-y-auto custom-scrollbar p-1">
               {questions.map((q, idx) => {
                 const isAnswered = state.answers[q.id] !== undefined;
